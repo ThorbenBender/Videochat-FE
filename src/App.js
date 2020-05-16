@@ -8,7 +8,7 @@ import Dashboard from './Components/Dashboard';
 function App() {
   return (
     <ContextProvider>
-      <Route path="/" component={Dashboard} />
+      <Route exact path="/" component={Dashboard} />
       <Route exact path="/room/:id" component={VideoChat} />
     </ContextProvider>
   );
