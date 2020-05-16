@@ -1,6 +1,7 @@
-import React, { useCallback } from 'react';
+import React, { useState } from 'react';
 import Context from './Context';
-import * as firebase from 'firebase';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
 import firebaseConfig from '../../firebase/firebaseConfig';
 
 firebase.initializeApp(firebaseConfig);
@@ -17,40 +18,14 @@ const ContextProvider = ({ children }) => {
     iceCandidatePoolSize: 10
   };
 
-  console.log(new RTCPeerConnection(configuration).createOffer());
-
-  const createRoom = useCallback(
-    async roomId => {
-      let myPeerConnection = new RTCPeerConnection(configuration);
-      const offer = await myPeerConnection.createOffer();
-      await myPeerConnection.setLocalDescription(offer);
-
-      const roomOffer = {
-        offer: {
-          type: offer.type,
-          sdp: offer.sdp
-        }
-      };
-      const roomRef = await db
-        .collection('rooms')
-        .doc(roomId)
-        .set(roomOffer);
-      roomRef.onSnapshot(async snapshot => {
-        const data = snapshot.data();
-        if (!myPeerConnection.currentRemoteDescription && data.answer) {
-          const answer = new RTCSessionDescription(data.answer);
-          await myPeerConnection.setRemoteDescription(answer);
-        }
-      });
-    },
-    [db, configuration]
+  const [myPeerConnection, setMyPeerConnection] = useState(
+    new RTCPeerConnection(configuration)
+  );
+  const [localStream, setLocalStream] = useState(
+    navigator.mediaDevices.getUserMedia({ audio: true })
   );
 
-  return (
-    <Context.Provider value={{ db: db, createRoom: createRoom }}>
-      {children}
-    </Context.Provider>
-  );
+  return <Context.Provider value={{ db: db }}>{children}</Context.Provider>;
 };
 
 export default ContextProvider;
