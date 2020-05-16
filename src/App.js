@@ -1,14 +1,15 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 import VideoChat from './Components/VideoChat';
 import { Route } from 'react-router-dom';
 import ContextProvider from './Components/ContextProvider/ContextProvider';
+import Dashboard from './Components/Dashboard';
 
 function App() {
   return (
     <ContextProvider>
-      <Route default exact path="/room/:id" component={VideoChat} />
+      <Route path="/" component={Dashboard} />
+      <Route exact path="/room/:id" component={VideoChat} />
     </ContextProvider>
   );
 }
